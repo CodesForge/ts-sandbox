@@ -1,0 +1,32 @@
+{
+  "name": "api",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "^1.3.14",
+    "drizzle-kit": "^0.31.10"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.4.2",
+    "@elysiajs/swagger": "^1.3.1",
+    "@types/pg": "^8.20.0",
+    "drizzle-orm": "^0.45.2",
+    "elysia": "^1.4.29",
+    "envalid": "^8.2.0",
+    "jose": "^6.2.3",
+    "pg": "^8.22.0"
+  },
+  "scripts": {
+    "db:generate": "drizzle-kit generate --config=./src/libs/db/drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config=./src/libs/db/drizzle.config.ts",
+    "db:studio": "drizzle-kit studio --config=./src/libs/db/drizzle.config.ts",
+    "start": "bun src/app/app.ts"
+  }
+}
