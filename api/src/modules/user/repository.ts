@@ -30,4 +30,13 @@ export class UserRepository {
 
         return user ?? null;
     }
+
+    async findByUsername(username: string): Promise<DBUser | null> {
+        const [user] = await this.db
+            .select()
+            .from(users)
+            .where(eq(users.username, username))
+            .limit(1);
+        return user ?? null;
+    }
 }

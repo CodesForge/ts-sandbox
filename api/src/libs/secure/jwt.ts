@@ -25,3 +25,33 @@ export class TokenService {
         return payload;
     }
 }
+
+// JWTService
+
+import { SignJWT, jwtVerify } from "jose";
+import { config } from "../../config/config";
+
+export interface JWTPayload {
+    sub: string;
+}
+
+export class JWTService {
+    private readonly secret: Uint8Array;
+    
+    constructor(secret: string = config.JWT_SECRET) {
+        this.secret = new TextEncoder().encode(secret);
+    }
+
+    async sign(payload: JWTPayload, expiresIn: string = "15m"): Promise<string> {
+        return await new SignJWT({ ...payload })
+            .setProtectedHeader({ alg: "HS256" })
+            .setIssuedAt()
+            .setExpirationTime(expiresIn)
+            .sign(this.secret);
+    }
+
+    async verify(token: string): Promise<JWTPayload> {
+        const { payload } = await jwtVerify(token, this.secret);
+        return payload as JWTPayload;
+    }
+}

@@ -116,3 +116,63 @@ export class AuthService {
         return sessions;
     } 
 }
+
+// UserService 
+
+import { ORPCError } from "@orpc/client";
+import type { DBUser } from "../../libs/db/schemas";
+import type { UserRepository } from "./repository";
+import type { JWTService } from "../../libs/secure/jwt";
+
+export interface UserResponseDTO {
+    success: boolean;
+    user: DBUser;
+    tokens: {
+        access_token: string;
+        refresh_token: string;
+    };
+};
+
+export interface UserRequestDTO {
+    name: string;
+    email: string;
+    password: string;
+};
+
+export class UserService {
+    constructor(
+        private repo: UserRepository,
+        private jwt: JWTService
+    ) {}
+
+    async register(user: UserRequestDTO): Promise<UserResponseDTO> {
+        const exists = await this.repo.findByEmail(user.email)
+        if (exists) {
+            throw new ORPCError("CONFLICT", {
+                message: "User already exists",
+            });
+        };
+        
+        const userID = crypto.randomUUID().toString();
+        const PasswordHash = await Bun.password.hash(user.password);
+
+        const created = await this.repo.create({
+            id: userID,
+            name: user.name,
+            email: user.email,
+            passwordHash: PasswordHash,
+        });
+
+        const access = await this.jwt.sign({ sub: created.id });
+        const refresh = crypto.randomUUID().toString();
+
+        return {
+            success: true,
+            user: created,
+            tokens: {
+                access_token: access,
+                refresh_token: refresh,
+            },
+        };
+    }
+};
