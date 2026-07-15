@@ -41,7 +41,7 @@ export const appRouter = {
             if (access_token) {
                 console.log("Access_token успешно найден!")
                 try {
-                    return context.userService.getUserById(access_token);
+                    return await context.userService.getUserById(access_token);
                 } catch {
 
                 }
