@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tsorpc-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tsorpc
+      POSTGRES_USER: tsorpc_user
+      POSTGRES_PASSWORD: lqKR4V2M5kFFKbBa
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: tsorpc-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+volumes:
+  pgdata:
+  redisdata:
